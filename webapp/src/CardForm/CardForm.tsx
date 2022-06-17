@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 
 type Props = {
     visible: boolean;
@@ -7,13 +7,7 @@ type Props = {
     theme: any; // PropTypes.object.isRequired,
 }
 
-const CardForm = ({visible, close, theme, subMenu}: Props) => {
-    console.log('CardForm', visible);
-
-    useEffect(() => {
-        console.log('CardForm useEffect');
-    }, [visible]);
-
+export const CardForm = ({visible, close, theme, subMenu}: Props) => {
     if (!visible) {
         return null;
     }
@@ -70,5 +64,3 @@ const getStyle = (theme: any) => ({
         backgroundColor: theme.centerChannelBg,
     },
 });
-
-export default CardForm;

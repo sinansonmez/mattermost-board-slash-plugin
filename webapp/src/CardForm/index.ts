@@ -7,10 +7,10 @@ import {isRootModalVisible, subMenu} from '../selectors';
 
 import {closeRootModal} from 'actions';
 
-import CardForm from './cardForm';
+// eslint-disable-next-line import/no-unresolved
+import {CardForm} from './cardForm';
 
 const mapStateToProps = (state: GlobalState) => {
-    console.log('CardForm/index.tsx', isRootModalVisible(state));
     return {
         visible: isRootModalVisible(state),
         subMenu: subMenu(state),
