@@ -1,13 +1,19 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 type Props = {
     visible: boolean;
     close: () => void;
     subMenu: string;
-    theme?: any; // PropTypes.object.isRequired,
+    theme: any; // PropTypes.object.isRequired,
 }
 
 const CardForm = ({visible, close, theme, subMenu}: Props) => {
+    console.log('CardForm', visible);
+
+    useEffect(() => {
+        console.log('CardForm useEffect');
+    }, [visible]);
+
     if (!visible) {
         return null;
     }

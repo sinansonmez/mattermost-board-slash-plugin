@@ -7,12 +7,15 @@ import {isRootModalVisible, subMenu} from '../selectors';
 
 import {closeRootModal} from 'actions';
 
-import CardForm from './CardForm';
+import CardForm from './cardForm';
 
-const mapStateToProps = (state: GlobalState) => ({
-    visible: isRootModalVisible(state),
-    subMenu: subMenu(state),
-});
+const mapStateToProps = (state: GlobalState) => {
+    console.log('CardForm/index.tsx', isRootModalVisible(state));
+    return {
+        visible: isRootModalVisible(state),
+        subMenu: subMenu(state),
+    };
+};
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     close: closeRootModal,
