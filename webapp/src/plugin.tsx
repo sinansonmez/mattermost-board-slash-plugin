@@ -6,8 +6,9 @@ import {GlobalState} from 'mattermost-redux/types/store';
 // eslint-disable-next-line import/no-unresolved
 import {PluginRegistry} from 'types/mattermost-webapp';
 
-import CardForm from 'CardForm/cardForm';
 import {mainMenuAction} from 'actions';
+import CardForm from 'CardForm';
+import reducer from 'reducer';
 
 export default class Plugin {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
@@ -17,6 +18,7 @@ export default class Plugin {
         registry.registerMainMenuAction(
             'Slash Plugin',
             () => store.dispatch(mainMenuAction() as any),
+
             // () => {
             //     window.openInteractiveDialog({
             //         dialog: {
@@ -32,5 +34,6 @@ export default class Plugin {
             // },
             <i className='icon fa fa-plug'/>,
         );
+        registry.registerReducer(reducer);
     }
 }
