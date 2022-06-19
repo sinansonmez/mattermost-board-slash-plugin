@@ -2,6 +2,7 @@ package main
 
 import (
 	"reflect"
+	"fmt"
 
 	"github.com/pkg/errors"
 )
@@ -70,6 +71,7 @@ func (p *Plugin) setConfiguration(configuration *configuration) {
 
 // OnConfigurationChange is invoked when configuration changes may have been made.
 func (p *Plugin) OnConfigurationChange() error {
+	fmt.Println("OnConfigurationChange")
 	var configuration = new(configuration)
 
 	// Load the public configuration fields from the Mattermost server configuration.
@@ -78,6 +80,16 @@ func (p *Plugin) OnConfigurationChange() error {
 	}
 
 	p.setConfiguration(configuration)
+
+	command, err := p.getCommand(configuration)
+	if err != nil {
+		return errors.Wrap(err, "failed to get command")
+	}
+
+	err = p.API.RegisterCommand(command)
+	if err != nil {
+		return errors.Wrap(err, "failed to register command")
+	}
 
 	return nil
 }

@@ -8,7 +8,7 @@ import {isRootModalVisible, subMenu} from '../selectors';
 import {closeRootModal} from 'actions';
 
 // eslint-disable-next-line import/no-unresolved
-import {CardForm} from './cardForm';
+import {CardForm} from './card_form';
 
 const mapStateToProps = (state: GlobalState) => {
     return {
