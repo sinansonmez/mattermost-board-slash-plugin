@@ -1,4 +1,4 @@
-package main
+package plugin
 
 import (
 	"fmt"
@@ -25,8 +25,7 @@ func (p *Plugin) getCommand(config *configuration) (*model.Command, error) {
 }
 
 func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*model.CommandResponse, *model.AppError) {
-	fmt.Println("Executing command")
-	command, action, parameters := parseCommand(args.Command)
+	command, _, _ := parseCommand(args.Command)
 
 	if command != "/card" {
 		return &model.CommandResponse{}, nil
@@ -34,22 +33,23 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 
 	// config := p.getConfiguration()
 
-	if f, ok := p.CommandHandlers[action]; ok {
-		// message := f(c, args, parameters, info)
-		message := f(c, args, parameters)
+	// if f, ok := p.CommandHandlers[action]; ok {
+	if f, ok := p.CommandHandlers["card"]; ok {
+		// message := f(c, args, parameters)
+		fakeParameters := []string{"card", "create", "test"}
+		message := f(c, args, fakeParameters)
 		if message != "" {
 			p.postCommandResponse(args, message)
 		}
 		return &model.CommandResponse{}, nil
 	}
 
-	p.postCommandResponse(args, fmt.Sprintf("Unknown action %v", action))
+	p.postCommandResponse(args, fmt.Sprintf("Unknown action %v", "card")) // todo replace card with action
 	return &model.CommandResponse{}, nil
 
 }
 
 func (p *Plugin) handleCreateCard(_ *plugin.Context, args *model.CommandArgs, parameters []string, ) string {
-	fmt.Println("Creating card")
 	if len(parameters) < 1 {
 		return "You must specify a card name"
 	}
@@ -77,7 +77,6 @@ func (p *Plugin) postCommandResponse(args *model.CommandArgs, text string) {
 
 // parseCommand parses the entire command input string and retrieves the command, action and parameters
 func parseCommand(input string) (command, action string, parameters []string) {
-	fmt.Println("parse comamand is called")
 	split := make([]string, 0)
 	current := ""
 	inQuotes := false

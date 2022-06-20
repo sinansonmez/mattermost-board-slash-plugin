@@ -1,4 +1,4 @@
-package main
+package plugin
 
 import (
 	"reflect"
@@ -80,6 +80,10 @@ func (p *Plugin) OnConfigurationChange() error {
 	}
 
 	p.setConfiguration(configuration)
+
+	p.CommandHandlers = map[string]CommandHandleFunc{
+		"card": p.handleCreateCard,
+	}
 
 	command, err := p.getCommand(configuration)
 	if err != nil {

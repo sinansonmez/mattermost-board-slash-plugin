@@ -1,4 +1,4 @@
-package main
+package plugin
 
 import (
 	"fmt"
@@ -6,15 +6,22 @@ import (
 	"sync"
 	"github.com/mattermost/mattermost-server/v6/model"
 	"github.com/mattermost/mattermost-server/v6/plugin"
+	pluginapi "github.com/mattermost/mattermost-plugin-api"
+	root "github.com/sinansonmez/mattermost-board-slash-plugin"
 )
 
 const (
-	wsEventCreateCard = "card"
+	wsEventCreateCard = "cardCreate"
+)
+
+var (
+	Manifest model.Manifest = root.Manifest
 )
 
 // Plugin implements the interface expected by the Mattermost server to communicate between the server and plugin processes.
 type Plugin struct {
 	plugin.MattermostPlugin
+	client *pluginapi.Client
 
 	// configurationLock synchronizes access to the configuration.
 	configurationLock sync.RWMutex
@@ -33,7 +40,6 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 }
 
 func NewPlugin() *Plugin {
-	fmt.Println("new plugin is called")
 	p := &Plugin{}
 
 	p.CommandHandlers = map[string]CommandHandleFunc{
@@ -43,7 +49,6 @@ func NewPlugin() *Plugin {
 }
 
 func createCardCommand() *model.Command {
-	fmt.Println("createCardCommand is called")
 	return &model.Command{
 		Trigger:          wsEventCreateCard,
 		AutoComplete:     true,
@@ -52,7 +57,6 @@ func createCardCommand() *model.Command {
 }
 
 func (p *Plugin) openCardCreateModal(userID string, channelID string, title string) {
-	fmt.Println("Opening card create modal")
 	p.API.PublishWebSocketEvent(
 		wsEventCreateCard,
 		map[string]interface{}{

@@ -7,10 +7,14 @@ import {isRootModalVisible, subMenu} from '../selectors';
 
 import {closeRootModal} from 'actions';
 
-// eslint-disable-next-line import/no-unresolved
+import {id as pluginId} from '../manifest';
+
 import {CardForm} from './card_form';
 
 const mapStateToProps = (state: GlobalState) => {
+    const {title, channelId} = state[`plugins-${pluginId}`];
+    console.log('title: ', title);
+    console.log('channelId: ', channelId);
     return {
         visible: isRootModalVisible(state),
         subMenu: subMenu(state),
