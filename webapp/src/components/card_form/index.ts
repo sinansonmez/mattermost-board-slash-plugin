@@ -3,11 +3,11 @@ import {bindActionCreators, Dispatch} from 'redux';
 
 import {GlobalState} from 'mattermost-redux/types/store';
 
-import {isRootModalVisible, subMenu} from '../selectors';
+import {isRootModalVisible, subMenu} from '../../selectors';
 
 import {closeRootModal} from 'actions';
 
-import {id as pluginId} from '../manifest';
+import {id as pluginId} from '../../manifest';
 
 import {CardForm} from './card_form';
 
