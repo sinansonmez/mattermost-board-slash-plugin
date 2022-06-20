@@ -107,7 +107,7 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
 
             <Input
                 id={'title'}
-                label='Title for the GitHub Issue'
+                label='Title for Card'
                 type='input'
                 required={true}
                 disabled={false}
@@ -119,7 +119,7 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
 
             <Input
                 id={'description'}
-                label='Description for the GitHub Issue'
+                label='Description for the Card'
                 type='textarea'
                 value={cardDescription}
                 onChange={handleCardDescriptionChange}
@@ -142,17 +142,14 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
         >
             <Modal.Header closeButton={true}>
                 <Modal.Title>
-                    {'Create GitHub Issue'}
+                    {'Create Card'}
                 </Modal.Title>
             </Modal.Header>
             <form
                 role='form'
                 onSubmit={handleCreate}
             >
-                <Modal.Body
-                    style={style.modal}
-                    ref='modalBody'
-                >
+                <Modal.Body style={style.modal} >
                     {component}
                 </Modal.Body>
                 <Modal.Footer>

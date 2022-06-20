@@ -6,13 +6,14 @@ import React from 'react';
 type Props = {
     executing?: boolean,
     disabled?: boolean,
-    children: JSX.Element | string,
+    children?: JSX.Element | string,
     executingMessage?: JSX.Element,
     defaultMessage: string,
     btnClass: string,
+    onClick?: (e: React.MouseEvent) => void,
     extraClasses?: string,
-    saving: boolean,
-    savingMessage: string,
+    saving?: boolean,
+    savingMessage?: string,
     type?: 'submit' | 'reset' | 'button',
 }
 
