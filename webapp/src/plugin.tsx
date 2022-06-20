@@ -7,7 +7,7 @@ import {GlobalState} from 'mattermost-redux/types/store';
 import {PluginRegistry} from 'types/mattermost-webapp';
 
 import {mainMenuAction} from 'actions';
-import CardForm from 'card_form';
+import CardForm from 'components/card_form';
 import reducer from 'reducer';
 
 import {handleOpenCreateIssueModal} from 'websocket';
