@@ -7,13 +7,18 @@ import {GlobalState} from 'mattermost-redux/types/store';
 import {PluginRegistry} from 'types/mattermost-webapp';
 
 import {mainMenuAction} from 'actions';
-import CardForm from 'CardForm';
+import CardForm from 'card_form';
 import reducer from 'reducer';
+
+import {handleOpenCreateIssueModal} from 'websocket';
+
+import {id as pluginId} from './manifest';
 
 export default class Plugin {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     public async initialize(registry: PluginRegistry, store: Store<GlobalState, Action<Record<string, unknown>>>) {
-    // @see https://developers.mattermost.com/extend/plugins/webapp/reference/
+        registry.registerReducer(reducer);
+
         registry.registerRootComponent(CardForm);
         registry.registerMainMenuAction(
             'Slash Plugin',
@@ -34,6 +39,6 @@ export default class Plugin {
             // },
             <i className='icon fa fa-plug'/>,
         );
-        registry.registerReducer(reducer);
+        registry.registerWebSocketEventHandler(`custom_${pluginId}_cardCreate`, handleOpenCreateIssueModal(store));
     }
 }
