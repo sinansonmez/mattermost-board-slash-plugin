@@ -4,11 +4,16 @@ import {Modal} from 'react-bootstrap';
 import FormButton from 'components/form_button';
 import Input from 'components/input';
 
+type Theme = {
+    centerChannelColor: string,
+    centerChannelBg: string
+}
+
 type Props = {
     visible: boolean;
     close: () => void;
-    create: () => void;
-    theme: any; // PropTypes.object.isRequired,
+    create: (card: {title: string, body: string}) => {data?: string, error?: {message: string}};
+    theme: Theme;
 }
 
 const MAX_TITLE_LENGTH = 256;
@@ -19,6 +24,15 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
     const [cardTitle, setCardTitle] = useState('');
     const [cardDescription, setCardDescription] = useState('');
     const [submitting, setSubmitting] = useState(false);
+
+    const getErrorMessage = (str: string) => {
+        try {
+            const parsed = JSON.parse(str);
+            return parsed.message;
+        } catch (e) {
+            return str;
+        }
+    };
 
     const requiredMsg = 'This field is required.';
     let issueTitleValidationError = null;
@@ -45,40 +59,36 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
             e.preventDefault();
         }
 
-        // if (!this.validator.validate() || !this.state.issueTitle) {
-        //     this.setState({
-        //         issueTitleValid: Boolean(this.state.issueTitle),
-        //         showErrors: true,
-        //     });
-        //     return;
-        // }
+        if (!cardTitle) {
+            setShowErrors(true);
+            return;
+        }
 
         // const { post } = this.props;
         // const postId = (post) ? post.id : '';
 
-        // const issue = {
-        //     title: this.state.issueTitle,
-        //     body: this.state.issueDescription,
+        const card = {
+            title: cardTitle,
+            body: cardDescription,
+
         //     repo: this.state.repo && this.state.repo.name,
         //     labels: this.state.labels,
         //     assignees: this.state.assignees,
         //     milestone: this.state.milestone && this.state.milestone.value,
         //     post_id: postId,
         //     channel_id: this.props.channelId,
-        // };
+        };
 
-        // this.setState({ submitting: true });
+        setSubmitting(true);
 
-        // const created = await this.props.create(issue);
-        // if (created.error) {
-        //     const errMessage = getErrorMessage(created.error.message);
-        //     this.setState({
-        //         error: errMessage,
-        //         showErrors: true,
-        //         submitting: false,
-        //     });
-        //     return;
-        // }
+        const created = await create(card);
+        if (created.error) {
+            const errMessage = getErrorMessage(created.error.message);
+            setError(errMessage);
+            setShowErrors(true);
+            setSubmitting(false);
+            return;
+        }
         handleClose(e);
     };
 
@@ -136,7 +146,6 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
             dialogClassName='modal--scroll'
             show={true}
             onHide={handleClose}
-            onExited={handleClose}
             bsSize='large'
             backdrop='static'
         >
@@ -175,7 +184,7 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
     );
 };
 
-const getStyle = (theme: any) => ({
+const getStyle = (theme: Theme) => ({
     backdrop: {
         position: 'absolute',
         display: 'flex',
@@ -189,8 +198,6 @@ const getStyle = (theme: any) => ({
         justifyContent: 'center',
     },
     modal: {
-        height: '250px',
-        width: '400px',
         padding: '1em',
         color: theme.centerChannelColor,
         backgroundColor: theme.centerChannelBg,
