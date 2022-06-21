@@ -4,10 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"sync"
+	
 	"github.com/mattermost/mattermost-server/v6/model"
 	"github.com/mattermost/mattermost-server/v6/plugin"
 	pluginapi "github.com/mattermost/mattermost-plugin-api"
 	root "github.com/sinansonmez/mattermost-board-slash-plugin"
+	"github.com/pkg/errors"
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -30,6 +33,8 @@ type Plugin struct {
 	// setConfiguration for usage.
 	configuration *configuration
 
+	router *mux.Router
+	chimeraURL string
 	CommandHandlers map[string]CommandHandleFunc
 	BotUserID   string
 }
@@ -39,13 +44,21 @@ func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Req
 	fmt.Fprint(w, "Hello, world!")
 }
 
-func NewPlugin() *Plugin {
-	p := &Plugin{}
+func (p *Plugin) OnActivate() error {
+	p.client = pluginapi.NewClient(p.API, p.Driver)
+	
+	siteURL := p.API.GetConfig().ServiceSettings.SiteURL
+	if siteURL == nil || *siteURL == "" {
+		return errors.New("siteURL is not set. Please set it and restart the plugin")
+	}
 
+	p.registerChimeraURL()
 	p.CommandHandlers = map[string]CommandHandleFunc{
 		"card": p.handleCreateCard,
 	}
-	return p
+
+	p.initializeAPI()
+	return nil
 }
 
 func createCardCommand() *model.Command {
@@ -66,3 +79,12 @@ func (p *Plugin) openCardCreateModal(userID string, channelID string, title stri
 		&model.WebsocketBroadcast{UserId: userID},
 	)
 }
+
+// registerChimeraURL fetches the Chimera URL from server settings or env var and sets it in the plugin object.
+func (p *Plugin) registerChimeraURL() {
+	chimeraURLSetting := p.API.GetConfig().PluginSettings.ChimeraOAuthProxyURL
+	if chimeraURLSetting != nil {
+		p.chimeraURL = *chimeraURLSetting
+	}
+}
+
