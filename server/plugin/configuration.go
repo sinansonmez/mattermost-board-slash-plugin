@@ -93,3 +93,12 @@ func (p *Plugin) OnConfigurationChange() error {
 
 	return nil
 }
+
+// IsValid checks if all needed fields are set.
+func (c *configuration) IsValid() error {
+	// if c.EncryptionKey == "" {
+	// 	return errors.New("must have an encryption key")
+	// }
+
+	return nil
+}

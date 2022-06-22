@@ -5,7 +5,7 @@ import {GlobalState} from 'mattermost-redux/types/store';
 
 import {isRootModalVisible, subMenu} from '../../selectors';
 
-import {closeRootModal, createCard} from 'actions';
+import {closeRootModal, createCard, getBoards} from 'actions';
 
 import {id as pluginId} from '../../manifest';
 
@@ -22,6 +22,7 @@ const mapStateToProps = (state: GlobalState) => {
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     close: closeRootModal,
     create: createCard,
+    getBoards,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(CardForm);

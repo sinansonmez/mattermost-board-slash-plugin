@@ -13,12 +13,13 @@ type Props = {
     visible: boolean;
     close: () => void;
     create: (card: {title: string, body: string}) => {data?: string, error?: {message: string}};
+    getBoards: () => {data?: string, error?: {message: string}};
     theme: Theme;
 }
 
 const MAX_TITLE_LENGTH = 256;
 
-export const CardForm = ({visible, close, theme, create}: Props) => {
+export const CardForm = ({visible, close, theme, create, getBoards}: Props) => {
     const [error, setError] = useState('');
     const [showErrors, setShowErrors] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
@@ -78,6 +79,8 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
         //     post_id: postId,
         //     channel_id: this.props.channelId,
         };
+
+        getBoards();
 
         setSubmitting(true);
 

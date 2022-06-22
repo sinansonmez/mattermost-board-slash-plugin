@@ -1,7 +1,7 @@
 package plugin
 
 import (
-	"fmt"
+	// "fmt"
 	"net/http"
 	"sync"
 	
@@ -41,7 +41,9 @@ type Plugin struct {
 
 // ServeHTTP demonstrates a plugin that handles HTTP requests by greeting the world.
 func (p *Plugin) ServeHTTP(c *plugin.Context, w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Hello, world!")
+	w.Header().Set("Content-Type", "application/json")
+
+	p.router.ServeHTTP(w, r)
 }
 
 func (p *Plugin) OnActivate() error {

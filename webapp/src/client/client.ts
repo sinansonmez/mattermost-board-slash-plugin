@@ -11,8 +11,13 @@ export default class Client {
     setServerRoute(url: string) {
         this.url = url + `/plugins/${pluginId}/api/v1`;
     }
+
     createCard = async (payload: any) => {
         return this.doPost(`${this.url}/createcard`, payload);
+    }
+
+    getBoards = async (payload: any) => {
+        return this.doPost(`${this.url}/getboards`, payload);
     }
 
     doPost = async (url: string, body: any, headers?: Headers) => {
