@@ -2,6 +2,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators, Dispatch} from 'redux';
 
 import {GlobalState} from 'mattermost-redux/types/store';
+import {getCurrentTeamId} from 'mattermost-redux/selectors/entities/teams';
 
 import {isRootModalVisible, subMenu} from '../../selectors';
 
@@ -16,6 +17,7 @@ const mapStateToProps = (state: GlobalState) => {
     return {
         visible: isRootModalVisible(state),
         subMenu: subMenu(state),
+        currentTeamId: getCurrentTeamId(state),
     };
 };
 

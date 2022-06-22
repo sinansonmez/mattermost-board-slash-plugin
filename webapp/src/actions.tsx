@@ -41,7 +41,7 @@ export const createCard = (payload: any) => {
     };
 };
 
-export const getBoards = (payload: any) => {
+export const getBoards = (payload: string) => {
     return async (dispatch: Dispatch<AnyAction>) => {
         let data;
         try {

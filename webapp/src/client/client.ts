@@ -4,20 +4,60 @@
 import {Client4} from 'mattermost-redux/client';
 import {ClientError} from 'mattermost-redux/client/client4';
 
+import {Utils} from 'utils';
+
 import {id as pluginId} from '../manifest';
 
 export default class Client {
     url: string | undefined;
+    readonly serverUrl: string | undefined
+
+    private getBaseURL(): string {
+        const baseURL = (this.serverUrl || Utils.getBaseURL(true)).replace(/\/$/, '');
+        return baseURL;
+    }
     setServerRoute(url: string) {
         this.url = url + `/plugins/${pluginId}/api/v1`;
+    }
+
+    private headers() {
+        return {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer a4ge3tyxobgztftak7ot98mruh',
+            'X-Requested-With': 'XMLHttpRequest',
+        };
+    }
+
+    private async getJson<T>(response: Response, defaultValue: T): Promise<T> {
+        // The server may return null or malformed json
+        try {
+            const value = await response.json();
+            return value || defaultValue;
+        } catch {
+            return defaultValue;
+        }
     }
 
     createCard = async (payload: any) => {
         return this.doPost(`${this.url}/createcard`, payload);
     }
 
-    getBoards = async (payload: any) => {
-        return this.doPost(`${this.url}/getboards`, payload);
+    // curl -i -d '{"login_id":"sysadmin","password":"Sys@dmin-sample1"}' https://8065-mattermost-mattermostgi-cf4j2retku7.ws-eu47.gitpod.io/api/v4/users/login
+    // token a4ge3tyxobgztftak7ot98mruh
+
+    // getBoards = async (payload: string) => {
+    //     return this.doPost(`${this.url}/getboards`, payload);
+    // }
+
+    getBoards = async (payload: string): Promise<any[]> => {
+        const path = `/api/v2/boards/${payload}/blocks`;
+        const response = await fetch(this.getBaseURL() + path, {headers: this.headers()});
+        if (response.status !== 200) {
+            return [];
+        }
+        const boards = (await this.getJson(response, [])) as any[];
+        return boards;
     }
 
     doPost = async (url: string, body: any, headers?: Headers) => {
@@ -28,7 +68,6 @@ export default class Client {
         };
 
         const response = await fetch(url, Client4.getOptions(options));
-        console.log('response: ', response);
 
         if (response.ok) {
             return response.json();

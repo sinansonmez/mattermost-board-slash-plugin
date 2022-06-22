@@ -11,15 +11,16 @@ type Theme = {
 
 type Props = {
     visible: boolean;
+    currentTeamId: string;
     close: () => void;
     create: (card: {title: string, body: string}) => {data?: string, error?: {message: string}};
-    getBoards: () => {data?: string, error?: {message: string}};
+    getBoards: (currentTeamId: string) => {data?: string, error?: {message: string}};
     theme: Theme;
 }
 
 const MAX_TITLE_LENGTH = 256;
 
-export const CardForm = ({visible, close, theme, create, getBoards}: Props) => {
+export const CardForm = ({visible, close, theme, create, getBoards, currentTeamId}: Props) => {
     const [error, setError] = useState('');
     const [showErrors, setShowErrors] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
@@ -80,7 +81,7 @@ export const CardForm = ({visible, close, theme, create, getBoards}: Props) => {
         //     channel_id: this.props.channelId,
         };
 
-        getBoards();
+        const data = await getBoards(currentTeamId);
 
         setSubmitting(true);
 
