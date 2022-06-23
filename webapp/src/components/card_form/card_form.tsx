@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Modal} from 'react-bootstrap';
 
 import FormButton from 'components/form_button';
@@ -15,12 +15,13 @@ type Props = {
     close: () => void;
     create: (card: {title: string, body: string}) => {data?: string, error?: {message: string}};
     getBoards: (currentTeamId: string) => {data?: string, error?: {message: string}};
+    channels: any;
     theme: Theme;
 }
 
 const MAX_TITLE_LENGTH = 256;
 
-export const CardForm = ({visible, close, theme, create, getBoards, currentTeamId}: Props) => {
+export const CardForm = ({visible, close, theme, create, getBoards, currentTeamId, channels}: Props) => {
     const [error, setError] = useState('');
     const [showErrors, setShowErrors] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
@@ -82,6 +83,7 @@ export const CardForm = ({visible, close, theme, create, getBoards, currentTeamI
         };
 
         const data = await getBoards(currentTeamId);
+        // console.log('channels', channels);
 
         setSubmitting(true);
 

@@ -24,7 +24,7 @@ export default class Client {
         return {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer a4ge3tyxobgztftak7ot98mruh',
+            Authorization: 'Bearer jz84iy9m3tbopcirx1qxc14nwr',
             'X-Requested-With': 'XMLHttpRequest',
         };
     }
@@ -44,20 +44,21 @@ export default class Client {
     }
 
     // curl -i -d '{"login_id":"sysadmin","password":"Sys@dmin-sample1"}' https://8065-mattermost-mattermostgi-cf4j2retku7.ws-eu47.gitpod.io/api/v4/users/login
-    // token a4ge3tyxobgztftak7ot98mruh
 
-    // getBoards = async (payload: string) => {
-    //     return this.doPost(`${this.url}/getboards`, payload);
-    // }
-
-    getBoards = async (payload: string): Promise<any[]> => {
-        const path = `/api/v2/boards/${payload}/blocks`;
-        const response = await fetch(this.getBaseURL() + path, {headers: this.headers()});
-        if (response.status !== 200) {
-            return [];
+    getBoards = async (channelIds: string[]): Promise<any[]> => {
+        console.log('channelIds: ', channelIds);
+        const boardsList: any[] = [];
+        for (const channelId of channelIds) {
+            const path = `/api/v1/workspaces/${channelId}/blocks`;
+            const response = await fetch(this.getBaseURL() + path, {headers: this.headers()});
+            if (response.status !== 200) {
+                return [];
+            }
+            const board = await this.getJson(response, {});
+            boardsList.push(board);
         }
-        const boards = (await this.getJson(response, [])) as any[];
-        return boards;
+        console.log('boards:', boardsList);
+        return boardsList;
     }
 
     doPost = async (url: string, body: any, headers?: Headers) => {

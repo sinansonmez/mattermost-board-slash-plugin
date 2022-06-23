@@ -3,6 +3,7 @@ import {bindActionCreators, Dispatch} from 'redux';
 
 import {GlobalState} from 'mattermost-redux/types/store';
 import {getCurrentTeamId} from 'mattermost-redux/selectors/entities/teams';
+import {getAllChannels} from 'mattermost-redux/selectors/entities/channels';
 
 import {isRootModalVisible, subMenu} from '../../selectors';
 
@@ -18,6 +19,7 @@ const mapStateToProps = (state: GlobalState) => {
         visible: isRootModalVisible(state),
         subMenu: subMenu(state),
         currentTeamId: getCurrentTeamId(state),
+        channels: getAllChannels(state),
     };
 };
 
