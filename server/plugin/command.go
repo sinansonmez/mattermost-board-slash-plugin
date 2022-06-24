@@ -18,8 +18,8 @@ func (p *Plugin) getCommand(config *configuration) (*model.Command, error) {
 	return &model.Command{
 		Trigger:              "card",
 		AutoComplete:         true,
-		AutoCompleteDesc:     "Available commands: connect, disconnect, todo, me, settings, subscribe, unsubscribe, mute, help, issue",
-		AutoCompleteHint:     "[command]",
+		AutoCompleteDesc:     "Create a card in the current channel's boards",
+		AutoCompleteHint:     "",
 		// AutocompleteData:     getAutocompleteData(config),
 	}, nil
 }

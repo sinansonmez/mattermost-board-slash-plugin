@@ -48,15 +48,11 @@ func (p *Plugin) initializeAPI() {
 	p.router = mux.NewRouter()
 	p.router.Use(p.withRecovery)
 
-	// oauthRouter := p.router.PathPrefix("/oauth").Subrouter()
 	apiRouter := p.router.PathPrefix("/api/v1").Subrouter()
-	fmt.Println("----------------------------")
-	fmt.Println("router: ", apiRouter)
-	fmt.Println("----------------------------")
 	apiRouter.Use(p.checkConfigured)
 
-	// apiRouter.HandleFunc("/createissue", p.checkAuth(p.attachUserContext(p.createIssue), ResponseTypePlain)).Methods(http.MethodPost)
 	apiRouter.HandleFunc("/createcard", p.attachUserContext(p.createCard)).Methods(http.MethodPost)
+	apiRouter.HandleFunc("/getboards", p.attachUserContext(p.getBoards)).Methods(http.MethodPost)
 }
 
 func (p *Plugin) withRecovery(next http.Handler) http.Handler {
@@ -112,9 +108,6 @@ func (p *Plugin) writeAPIError(w http.ResponseWriter, apiErr *APIErrorResponse) 
 }
 
 func (p *Plugin) createCard(c *UserContext, w http.ResponseWriter, r *http.Request) {
-	fmt.Println("--------------------------------------------")
-	fmt.Println("createCard is called")
-	fmt.Println("--------------------------------------------")
 	// type IssueRequest struct {
 	// 	Title     string   `json:"title"`
 	// 	Body      string   `json:"body"`
@@ -254,6 +247,11 @@ func (p *Plugin) createCard(c *UserContext, w http.ResponseWriter, r *http.Reque
 	// }
 
 	// p.writeJSON(w, result)
+}
+
+// get all the blocks in team from mattermost focalboard api
+func (p *Plugin) getBoards(c *UserContext, w http.ResponseWriter, r *http.Request) {
+	fmt.Println("-----------------getBoards-----------------")
 }
 
 func (p *Plugin) attachUserContext(handler HTTPHandlerFuncWithUserContext) http.HandlerFunc {

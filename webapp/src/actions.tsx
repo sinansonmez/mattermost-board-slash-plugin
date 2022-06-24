@@ -29,10 +29,8 @@ export const createCard = (payload: any) => {
         try {
             data = await Client.createCard(payload);
         } catch (error) {
-            console.log('error:', error)
             return {error};
         }
-        console.log('data: ', data)
 
         // const connected = await dispatch(checkAndHandleNotConnected(data));
         // if (!connected) {

@@ -3,6 +3,7 @@ import {Modal} from 'react-bootstrap';
 
 import FormButton from 'components/form_button';
 import Input from 'components/input';
+import BoardSelector from 'components/board_selector';
 
 type Theme = {
     centerChannelColor: string,
@@ -11,6 +12,7 @@ type Theme = {
 
 type Props = {
     visible: boolean;
+    currentTeamId: string;
     close: () => void;
     create: (card: {title: string, body: string}) => {data?: string, error?: {message: string}};
     theme: Theme;
@@ -20,6 +22,7 @@ const MAX_TITLE_LENGTH = 256;
 
 export const CardForm = ({visible, close, theme, create}: Props) => {
     const [error, setError] = useState('');
+    const [board, setBoard] = useState({value: '', label: ''});
     const [showErrors, setShowErrors] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
     const [cardDescription, setCardDescription] = useState('');
@@ -64,19 +67,9 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
             return;
         }
 
-        // const { post } = this.props;
-        // const postId = (post) ? post.id : '';
-
         const card = {
             title: cardTitle,
             body: cardDescription,
-
-        //     repo: this.state.repo && this.state.repo.name,
-        //     labels: this.state.labels,
-        //     assignees: this.state.assignees,
-        //     milestone: this.state.milestone && this.state.milestone.value,
-        //     post_id: postId,
-        //     channel_id: this.props.channelId,
         };
 
         setSubmitting(true);
@@ -101,19 +94,22 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
 
     const handleCardTitleChange = (cardTitleParam: string) => setCardTitle(cardTitleParam);
     const handleCardDescriptionChange = (cardDescriptionParam: string) => setCardDescription(cardDescriptionParam);
+    const handleBoardChange = (boardParam: unknown, actionMeta: any) => {
+        if (actionMeta.action === 'select-option') {
+            const newBoard = boardParam || {value: '', label: ''};
+            setBoard(newBoard as { value: string, label: string });
+        }
+    };
 
     const style = getStyle(theme);
 
     const component = (
         <div>
-            {/* <GithubRepoSelector
-                onChange={this.handleRepoChange}
-                value={this.state.repo && this.state.repo.name}
+            <BoardSelector
+                onChange={handleBoardChange}
+                value={board}
                 required={true}
-                theme={theme}
-                addValidate={this.validator.addComponent}
-                removeValidate={this.validator.removeComponent}
-            /> */}
+            />
 
             <Input
                 id={'title'}
