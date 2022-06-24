@@ -22,7 +22,7 @@ const MAX_TITLE_LENGTH = 256;
 
 export const CardForm = ({visible, close, theme, create}: Props) => {
     const [error, setError] = useState('');
-    const [board, setBoard] = useState('');
+    const [board, setBoard] = useState({value: '', label: ''});
     const [showErrors, setShowErrors] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
     const [cardDescription, setCardDescription] = useState('');
@@ -94,19 +94,21 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
 
     const handleCardTitleChange = (cardTitleParam: string) => setCardTitle(cardTitleParam);
     const handleCardDescriptionChange = (cardDescriptionParam: string) => setCardDescription(cardDescriptionParam);
-    const handleBoardChange = (boardParam: unknown, actionMeta: any) => setBoard(boardParam);
+    const handleBoardChange = (boardParam: unknown, actionMeta: any) => {
+        if (actionMeta.action === 'select-option') {
+            const newBoard = boardParam || {value: '', label: ''};
+            setBoard(newBoard as { value: string, label: string });
+        }
+    };
 
     const style = getStyle(theme);
 
     const component = (
         <div>
             <BoardSelector
-                // onChange={handleBoardChange}
-                // value={board}
-
-                // required={true}
-                // addValidate={this.validator.addComponent}
-                // removeValidate={this.validator.removeComponent}
+                onChange={handleBoardChange}
+                value={board}
+                required={true}
             />
 
             <Input

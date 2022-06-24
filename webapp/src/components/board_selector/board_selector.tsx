@@ -10,18 +10,15 @@ import Client from 'client';
 
 export type Props = {
     currentChannel: Channel;
-    // onChange: (newValue: unknown, actionMeta: any) => void;
-    // value: string;
-
-    // addValidate: (name: string) => void;
-    // removeValidate: (name: string) => void;
+    onChange: (newValue: unknown, actionMeta: any) => void;
+    required: boolean;
+    value: {value: string; label: string};
 }
 
 export const BoardSelector = (props: Props) => {
     const [yourBoards, setYourBoards] = useState<Array<{id: string, title: string}>>([]);
 
     const onChange = (newValue: unknown, actionMeta: any) => {
-        console.log('onChange: ', newValue);
         props.onChange(newValue, actionMeta);
     };
 
@@ -33,7 +30,6 @@ export const BoardSelector = (props: Props) => {
     }, []);
 
     const boardOptions = yourBoards.map((item) => ({value: item.id, label: item.title}));
-    // const boardOptions = [{value: 'board1', label: 'board1'}, {value: 'board2', label: 'board2'}];
 
     return (
         <div className={'form-group margin-bottom x3'}>
@@ -41,10 +37,10 @@ export const BoardSelector = (props: Props) => {
                 name={'board'}
                 label={'Board'}
                 required={true}
-                // onChange={onChange}
+                onChange={onChange}
                 options={boardOptions}
-                // key={'board'}
-                // value={boardOptions.find((option) => option.value === props.value)}
+                key={'board'}
+                value={boardOptions.find((option) => option.value === props.value.value)}
             />
             <div className={'help-text'}>
                 {'Returns all boards for the user'} <br/>

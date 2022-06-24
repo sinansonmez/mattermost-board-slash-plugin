@@ -24,7 +24,7 @@ export default class Client {
         return {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer 5gnof3jcojbybnkp46uukrdz4c',
+            Authorization: 'Bearer 8wzjceidbtg4xns7onsmjd4gry',
             'X-Requested-With': 'XMLHttpRequest',
         };
     }
