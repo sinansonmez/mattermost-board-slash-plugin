@@ -41,22 +41,4 @@ export const createCard = (payload: any) => {
     };
 };
 
-export const getBoards = (payload: string) => {
-    return async (dispatch: Dispatch<AnyAction>) => {
-        let data;
-        try {
-            data = await Client.getBoards(payload);
-        } catch (error) {
-            return {error};
-        }
-
-        // const connected = await dispatch(checkAndHandleNotConnected(data));
-        // if (!connected) {
-        //     return {error: data};
-        // }
-
-        return {data};
-    };
-};
-
 export const mainMenuAction = openRootModal;

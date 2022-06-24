@@ -24,19 +24,9 @@ export default class Client {
         return {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer jz84iy9m3tbopcirx1qxc14nwr',
+            Authorization: 'Bearer 5gnof3jcojbybnkp46uukrdz4c',
             'X-Requested-With': 'XMLHttpRequest',
         };
-    }
-
-    private async getJson<T>(response: Response, defaultValue: T): Promise<T> {
-        // The server may return null or malformed json
-        try {
-            const value = await response.json();
-            return value || defaultValue;
-        } catch {
-            return defaultValue;
-        }
     }
 
     createCard = async (payload: any) => {
@@ -45,20 +35,9 @@ export default class Client {
 
     // curl -i -d '{"login_id":"sysadmin","password":"Sys@dmin-sample1"}' https://8065-mattermost-mattermostgi-cf4j2retku7.ws-eu47.gitpod.io/api/v4/users/login
 
-    getBoards = async (channelIds: string[]): Promise<any[]> => {
-        console.log('channelIds: ', channelIds);
-        const boardsList: any[] = [];
-        for (const channelId of channelIds) {
-            const path = `/api/v1/workspaces/${channelId}/blocks`;
-            const response = await fetch(this.getBaseURL() + path, {headers: this.headers()});
-            if (response.status !== 200) {
-                return [];
-            }
-            const board = await this.getJson(response, {});
-            boardsList.push(board);
-        }
-        console.log('boards:', boardsList);
-        return boardsList;
+    getBoards = async (payload: string) => {
+        const path = `/api/v1/workspaces/${payload}/blocks`;
+        return fetch(this.getBaseURL() + path, {headers: this.headers()});
     }
 
     doPost = async (url: string, body: any, headers?: Headers) => {
@@ -82,4 +61,15 @@ export default class Client {
             url,
         });
     }
+
+    async getJson<T>(response: Response, defaultValue: T): Promise<T> {
+        // The server may return null or malformed json
+        try {
+            const value = await response.json();
+            return value || defaultValue;
+        } catch {
+            return defaultValue;
+        }
+    }
 }
+
