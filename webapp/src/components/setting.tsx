@@ -8,7 +8,6 @@ type Props = {
     label: string,
     children: JSX.Element,
     required: boolean,
-    hideRequiredStar: boolean,
     helpText?: string,
 }
 
@@ -19,7 +18,6 @@ const Setting = (props: Props) => {
         inputId,
         label,
         required,
-        hideRequiredStar,
     } = props;
 
     return (
@@ -32,7 +30,7 @@ const Setting = (props: Props) => {
                     {label}
                 </label>)
             }
-            {required && !hideRequiredStar && (
+            {required && (
                 <span
                     className='error-text'
                     style={{marginLeft: '3px'}}

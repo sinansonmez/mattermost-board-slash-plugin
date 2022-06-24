@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
 
 import FormButton from 'components/form_button';
 import Input from 'components/input';
+import BoardSelector from 'components/board_selector';
 
 type Theme = {
     centerChannelColor: string,
@@ -14,15 +15,14 @@ type Props = {
     currentTeamId: string;
     close: () => void;
     create: (card: {title: string, body: string}) => {data?: string, error?: {message: string}};
-    getBoards: (currentTeamId: string) => {data?: string, error?: {message: string}};
-    channels: any;
     theme: Theme;
 }
 
 const MAX_TITLE_LENGTH = 256;
 
-export const CardForm = ({visible, close, theme, create, getBoards, currentTeamId, channels}: Props) => {
+export const CardForm = ({visible, close, theme, create}: Props) => {
     const [error, setError] = useState('');
+    const [board, setBoard] = useState('');
     const [showErrors, setShowErrors] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
     const [cardDescription, setCardDescription] = useState('');
@@ -67,23 +67,10 @@ export const CardForm = ({visible, close, theme, create, getBoards, currentTeamI
             return;
         }
 
-        // const { post } = this.props;
-        // const postId = (post) ? post.id : '';
-
         const card = {
             title: cardTitle,
             body: cardDescription,
-
-        //     repo: this.state.repo && this.state.repo.name,
-        //     labels: this.state.labels,
-        //     assignees: this.state.assignees,
-        //     milestone: this.state.milestone && this.state.milestone.value,
-        //     post_id: postId,
-        //     channel_id: this.props.channelId,
         };
-
-        const data = await getBoards(currentTeamId);
-        // console.log('channels', channels);
 
         setSubmitting(true);
 
@@ -107,19 +94,20 @@ export const CardForm = ({visible, close, theme, create, getBoards, currentTeamI
 
     const handleCardTitleChange = (cardTitleParam: string) => setCardTitle(cardTitleParam);
     const handleCardDescriptionChange = (cardDescriptionParam: string) => setCardDescription(cardDescriptionParam);
+    const handleBoardChange = (boardParam: unknown, actionMeta: any) => setBoard(boardParam);
 
     const style = getStyle(theme);
 
     const component = (
         <div>
-            {/* <GithubRepoSelector
-                onChange={this.handleRepoChange}
-                value={this.state.repo && this.state.repo.name}
-                required={true}
-                theme={theme}
-                addValidate={this.validator.addComponent}
-                removeValidate={this.validator.removeComponent}
-            /> */}
+            <BoardSelector
+                // onChange={handleBoardChange}
+                // value={board}
+
+                // required={true}
+                // addValidate={this.validator.addComponent}
+                // removeValidate={this.validator.removeComponent}
+            />
 
             <Input
                 id={'title'}
