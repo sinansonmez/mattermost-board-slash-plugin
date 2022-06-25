@@ -24,12 +24,13 @@ export default class Client {
         return {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer 8wzjceidbtg4xns7onsmjd4gry',
+            Authorization: 'Bearer seunw5btj38qx8n97qj4upabeo',
             'X-Requested-With': 'XMLHttpRequest',
         };
     }
 
     createCard = async (payload: any) => {
+        console.log('createCard', payload);
         return this.doPost(`${this.url}/createcard`, payload);
     }
 

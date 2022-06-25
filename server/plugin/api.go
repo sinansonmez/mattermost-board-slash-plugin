@@ -10,7 +10,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost-plugin-api/experimental/bot/logger"
-	// "github.com/mattermost/mattermost-server/v6/model"
+	fb_model "github.com/mattermost/focalboard/server/model"
+	fb_utils "github.com/mattermost/focalboard/server/utils"
+	mm_model "github.com/mattermost/mattermost-server/v6/model"
 )
 
 // ResponseType indicates type of response returned by api
@@ -107,7 +109,42 @@ func (p *Plugin) writeAPIError(w http.ResponseWriter, apiErr *APIErrorResponse) 
 	}
 }
 
+// (c *UserContext, w http.ResponseWriter, r *http.Request)
+
+// func (p *Plugin) createCard(c *UserContext, w http.ResponseWriter, r *http.Request) (card *fb_model.Block, err error) {
 func (p *Plugin) createCard(c *UserContext, w http.ResponseWriter, r *http.Request) {
+	fmt.Println("-----------------createCard request-----------------", r.Body)
+	fmt.Println("-----------------createCard usercontexr-----------------", c)
+	initialCard := &fb_model.Block{
+		ID: fb_utils.NewID(fb_utils.IDTypeCard),
+		// RootID:      "bww7u4t6m7ib6umm6jsp9ww69ro",
+		ParentID:    "bww7u4t6m7ib6umm6jsp9ww69ro",
+		CreatedBy:   "c.User.Id",
+		ModifiedBy:  "info.User.Id",
+		Schema:      1,
+		Type:        fb_model.TypeCard,
+		Title:       "test card",
+		Fields:      make(map[string]interface{}),
+		CreateAt:    mm_model.GetMillis(),
+		UpdateAt:    mm_model.GetMillis(),
+		WorkspaceID: "ao5oxexpzbff7et8hwgwit4twy",
+	}
+
+	client, err := NewClient("https://8065-mattermost-mattermostgi-cf4j2retku7.ws-eu47.gitpod.io", "sysadmin", "Sys@dmin-sample1")
+
+	if err != nil {
+		fmt.Println("Error creating client: ", err)
+	}
+
+	cardRes, resp := insertBlock(client, "seunw5btj38qx8n97qj4upabeo", initialCard)
+
+	if resp.Error != nil {
+				// return cardRes, fmt.Errorf("cannot insert blocks for board %s: %w", "bww7u4t6m7ib6umm6jsp9ww69ro", resp.Error)
+				fmt.Errorf("cannot insert blocks for board %s: %w", "bww7u4t6m7ib6umm6jsp9ww69ro", resp.Error)
+	}
+	fmt.Println("-----------------createCard response-----------------", cardRes)
+
+	// board, resp := insertBlock(client, "ao5oxexpzbff7et8hwgwit4twy", card)
 	// type IssueRequest struct {
 	// 	Title     string   `json:"title"`
 	// 	Body      string   `json:"body"`
@@ -247,6 +284,20 @@ func (p *Plugin) createCard(c *UserContext, w http.ResponseWriter, r *http.Reque
 	// }
 
 	// p.writeJSON(w, result)
+	// return cardRes, nil
+}
+
+func insertBlock(client *Client, workspaceID string, block *fb_model.Block) (*fb_model.Block, *Response) {
+	blocks := []*fb_model.Block{block}
+	b, _ := json.Marshal(blocks)
+	r, err := client.FBclient.DoAPIPost(fmt.Sprintf("/workspaces/%s/blocks", workspaceID), string(b))
+	if err != nil {
+		return nil, BuildErrorResponse(r, err)
+	}
+	defer closeBody(r)
+
+	blocksNew := fb_model.BlocksFromJSON(r.Body)
+	return &blocksNew[0], BuildResponse(r)
 }
 
 // get all the blocks in team from mattermost focalboard api

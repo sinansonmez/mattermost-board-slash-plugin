@@ -32,11 +32,6 @@ export const createCard = (payload: any) => {
             return {error};
         }
 
-        // const connected = await dispatch(checkAndHandleNotConnected(data));
-        // if (!connected) {
-        //     return {error: data};
-        // }
-
         return {data};
     };
 };

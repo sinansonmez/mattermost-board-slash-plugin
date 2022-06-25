@@ -1,6 +1,8 @@
 import React, {useState} from 'react';
 import {Modal} from 'react-bootstrap';
 
+import {Channel} from 'mattermost-redux/types/channels';
+
 import FormButton from 'components/form_button';
 import Input from 'components/input';
 import BoardSelector from 'components/board_selector';
@@ -12,7 +14,7 @@ type Theme = {
 
 type Props = {
     visible: boolean;
-    currentTeamId: string;
+    currentChannel: Channel;
     close: () => void;
     create: (card: {title: string, body: string}) => {data?: string, error?: {message: string}};
     theme: Theme;
@@ -20,9 +22,9 @@ type Props = {
 
 const MAX_TITLE_LENGTH = 256;
 
-export const CardForm = ({visible, close, theme, create}: Props) => {
+export const CardForm = ({ visible, close, theme, create, currentChannel}: Props) => {
     const [error, setError] = useState('');
-    const [board, setBoard] = useState({value: '', label: ''});
+    const [board, setBoard] = useState({id: '', name: ''});
     const [showErrors, setShowErrors] = useState(false);
     const [cardTitle, setCardTitle] = useState('');
     const [cardDescription, setCardDescription] = useState('');
@@ -62,14 +64,16 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
             e.preventDefault();
         }
 
-        if (!cardTitle) {
+        if (!cardTitle || !board.id) {
             setShowErrors(true);
             return;
         }
 
         const card = {
+            boardId: board.id,
             title: cardTitle,
             body: cardDescription,
+            channelId: currentChannel.id,
         };
 
         setSubmitting(true);
@@ -96,8 +100,8 @@ export const CardForm = ({visible, close, theme, create}: Props) => {
     const handleCardDescriptionChange = (cardDescriptionParam: string) => setCardDescription(cardDescriptionParam);
     const handleBoardChange = (boardParam: unknown, actionMeta: any) => {
         if (actionMeta.action === 'select-option') {
-            const newBoard = boardParam || {value: '', label: ''};
-            setBoard(newBoard as { value: string, label: string });
+            const newBoard = {id: boardParam.value, name: boardParam.label} || {id: '', name: ''};
+            setBoard(newBoard);
         }
     };
 
