@@ -16,7 +16,7 @@ const mapStateToProps = (state: GlobalState) => {
     return {
         visible: isRootModalVisible(state),
         currentChannel: getCurrentChannel(state),
-        currentUserId: getCurrentUserId,
+        currentUserId: getCurrentUserId(state),
     };
 };
 
