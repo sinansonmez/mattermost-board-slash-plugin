@@ -30,7 +30,6 @@ export default class Client {
     }
 
     createCard = async (payload: any) => {
-        console.log('createCard', payload);
         return this.doPost(`${this.url}/createcard`, payload);
     }
 

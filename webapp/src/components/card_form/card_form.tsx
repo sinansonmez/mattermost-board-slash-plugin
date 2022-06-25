@@ -3,6 +3,8 @@ import {Modal} from 'react-bootstrap';
 
 import {Channel} from 'mattermost-redux/types/channels';
 
+import {UserProfile} from 'mattermost-redux/types/users';
+
 import FormButton from 'components/form_button';
 import Input from 'components/input';
 import BoardSelector from 'components/board_selector';
@@ -15,6 +17,7 @@ type Theme = {
 type Props = {
     visible: boolean;
     currentChannel: Channel;
+    currentUserId: string
     close: () => void;
     create: (card: {title: string, body: string}) => {data?: string, error?: {message: string}};
     theme: Theme;
@@ -22,7 +25,7 @@ type Props = {
 
 const MAX_TITLE_LENGTH = 256;
 
-export const CardForm = ({ visible, close, theme, create, currentChannel}: Props) => {
+export const CardForm = ({visible, close, theme, create, currentChannel, currentUserId}: Props) => {
     const [error, setError] = useState('');
     const [board, setBoard] = useState({id: '', name: ''});
     const [showErrors, setShowErrors] = useState(false);
@@ -70,10 +73,12 @@ export const CardForm = ({ visible, close, theme, create, currentChannel}: Props
         }
 
         const card = {
-            boardId: board.id,
-            title: cardTitle,
+            RootID: board.id,
+            Title: cardTitle,
             body: cardDescription,
-            channelId: currentChannel.id,
+            WorkspaceID: currentChannel.id,
+            CreatedBy: currentUserId,
+            ModifiedBy: currentUserId,
         };
 
         setSubmitting(true);
