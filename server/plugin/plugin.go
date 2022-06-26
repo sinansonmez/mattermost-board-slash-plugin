@@ -1,7 +1,6 @@
 package plugin
 
 import (
-	// "fmt"
 	"net/http"
 	"sync"
 	
