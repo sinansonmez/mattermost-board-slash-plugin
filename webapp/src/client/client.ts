@@ -33,6 +33,7 @@ export default class Client {
         return this.doPost(`${this.url}/createcard`, payload);
     }
 
+    // command to get the token
     // curl -i -d '{"login_id":"sysadmin","password":"Sys@dmin-sample1"}' https://8065-mattermost-mattermostgi-cf4j2retku7.ws-eu47.gitpod.io/api/v4/users/login
 
     getBoards = async (payload: string) => {

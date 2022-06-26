@@ -9,8 +9,6 @@ export const isEnabled = (state: GlobalState) => getPluginState(state).enabled;
 
 export const isRootModalVisible = (state: GlobalState) => getPluginState(state).rootModalVisible;
 
-export const subMenu = (state: GlobalState) => getPluginState(state).subMenu;
-
 export const getServerRoute = (state: GlobalState) => {
     const config = getConfig(state);
     let basePath = '';
