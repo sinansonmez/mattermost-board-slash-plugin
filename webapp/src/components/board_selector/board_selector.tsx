@@ -25,7 +25,12 @@ export const BoardSelector = (props: Props) => {
     useEffect(() => {
         const response = Client.getBoards(props.currentChannel.id);
         response.then((data) => {
-            Client.getJson(data, {}).then((json) => setYourBoards(json));
+            // eslint-disable-next-line max-nested-callbacks
+            Client.getJson(data, []).then((json) => {
+                // eslint-disable-next-line max-nested-callbacks
+                const onlyBoards = json.filter((item) => item.type === 'board');
+                setYourBoards(onlyBoards);
+            });
         });
     }, []);
 
