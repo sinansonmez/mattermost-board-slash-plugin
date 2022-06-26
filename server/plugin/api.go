@@ -139,6 +139,7 @@ func (p *Plugin) createCard(c *UserContext, w http.ResponseWriter, r *http.Reque
 
 	initialCard.ParentID = initialCard.RootID
 
+	// todo: replace literal with real siteurl and user info
 	client, err := NewClient("https://8065-mattermost-mattermostgi-cf4j2retku7.ws-eu47.gitpod.io", "sysadmin", "Sys@dmin-sample1")
 
 	if err != nil {
@@ -150,7 +151,7 @@ func (p *Plugin) createCard(c *UserContext, w http.ResponseWriter, r *http.Reque
 	if resp.Error != nil {
 		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "cannot insert block in the board", StatusCode: http.StatusBadRequest})
 	}
-	
+
 	return
 }
 

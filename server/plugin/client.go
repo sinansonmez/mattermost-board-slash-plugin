@@ -120,8 +120,6 @@ func (c *FocalboardClient) GetMeRoute() string {
 	return "/users/me"
 }
 
-// curl -i -H "X-Requested-With: XMLHttpRequest" -H 'Authorization: Bearer q6ksmp44j3rf3gn4sugw887y3a' https://8065-mattermost-mattermostgi-cf4j2retku7.ws-eu47.gitpod.io/plugins/focalboard/api/v2/workspaces
-
 func (c *FocalboardClient) GetMe() (*fb_model.User, *Response) {
 	r, err := c.DoAPIGet(c.GetMeRoute(), "")
 	fmt.Println("GetMe:", r, err)
