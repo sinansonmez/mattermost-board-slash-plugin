@@ -20,8 +20,6 @@ type Props = {
 }
 
 const Input = ({type = 'input', required = false, readOnly = false, ...remainingProps}: Props) => {
-    const [invalid, setInvalid] = useState(false);
-
     const handleChange = (e: any) => {
         if (type === 'number') {
             remainingProps.onChange(parseInt(e.target.value, 10));
@@ -35,7 +33,7 @@ const Input = ({type = 'input', required = false, readOnly = false, ...remaining
     const value = remainingProps.value || '';
 
     let validationError = null;
-    if (required && invalid) {
+    if (required) {
         validationError = (
             <p className='help-text error-text'>
                 <span>{requiredMsg}</span>
