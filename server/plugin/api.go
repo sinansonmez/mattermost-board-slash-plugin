@@ -54,7 +54,6 @@ func (p *Plugin) initializeAPI() {
 	apiRouter.Use(p.checkConfigured)
 
 	apiRouter.HandleFunc("/createcard", p.attachUserContext(p.createCard)).Methods(http.MethodPost)
-	apiRouter.HandleFunc("/getboards", p.attachUserContext(p.getBoards)).Methods(http.MethodPost)
 }
 
 func (p *Plugin) withRecovery(next http.Handler) http.Handler {
@@ -151,6 +150,8 @@ func (p *Plugin) createCard(c *UserContext, w http.ResponseWriter, r *http.Reque
 	if resp.Error != nil {
 		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "cannot insert block in the board", StatusCode: http.StatusBadRequest})
 	}
+	
+	return
 }
 
 func insertBlock(client *Client, workspaceID string, block *fb_model.Block) (*fb_model.Block, *Response) {
@@ -164,11 +165,6 @@ func insertBlock(client *Client, workspaceID string, block *fb_model.Block) (*fb
 
 	blocksNew := fb_model.BlocksFromJSON(r.Body)
 	return &blocksNew[0], BuildResponse(r)
-}
-
-// get all the blocks in team from mattermost focalboard api
-func (p *Plugin) getBoards(c *UserContext, w http.ResponseWriter, r *http.Request) {
-	fmt.Println("-----------------getBoards-----------------")
 }
 
 func (p *Plugin) attachUserContext(handler HTTPHandlerFuncWithUserContext) http.HandlerFunc {

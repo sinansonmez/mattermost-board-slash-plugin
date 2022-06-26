@@ -8,7 +8,7 @@ import {getCurrentUserId} from 'mattermost-redux/selectors/entities/common';
 
 import {isRootModalVisible} from '../../selectors';
 
-import {closeRootModal, createCard} from 'actions';
+import {closeRootModal} from 'actions';
 
 import {CardForm} from './card_form';
 
@@ -22,7 +22,6 @@ const mapStateToProps = (state: GlobalState) => {
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     close: closeRootModal,
-    create: createCard,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(CardForm);

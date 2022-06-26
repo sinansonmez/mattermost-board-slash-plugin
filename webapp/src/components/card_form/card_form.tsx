@@ -3,15 +3,23 @@ import {Modal} from 'react-bootstrap';
 
 import {Channel} from 'mattermost-redux/types/channels';
 
-import {UserProfile} from 'mattermost-redux/types/users';
-
 import FormButton from 'components/form_button';
 import Input from 'components/input';
 import BoardSelector from 'components/board_selector';
+import Client from 'client';
 
 type Theme = {
     centerChannelColor: string,
     centerChannelBg: string
+}
+
+type Card = {
+    RootID: string,
+    Title: string,
+    body: string,
+    WorkspaceID: string,
+    CreatedBy: string,
+    ModifiedBy: string,
 }
 
 type Props = {
@@ -19,13 +27,13 @@ type Props = {
     currentChannel: Channel;
     currentUserId: string
     close: () => void;
-    create: (card: {title: string, body: string}) => {data?: string, error?: {message: string}};
+    create: (card: Card) => {error?: {message: string}};
     theme: Theme;
 }
 
 const MAX_TITLE_LENGTH = 256;
 
-export const CardForm = ({visible, close, theme, create, currentChannel, currentUserId}: Props) => {
+export const CardForm = ({visible, close, theme, currentChannel, currentUserId}: Props) => {
     const [error, setError] = useState('');
     const [board, setBoard] = useState({id: '', name: ''});
     const [showErrors, setShowErrors] = useState(false);
@@ -61,6 +69,27 @@ export const CardForm = ({visible, close, theme, create, currentChannel, current
         );
     }
 
+    const createCard = async () => {
+        setSubmitting(true);
+        setError('');
+        setShowErrors(false);
+        const card: Card = {
+            RootID: board.id,
+            Title: cardTitle,
+            body: cardDescription,
+            WorkspaceID: currentChannel.id,
+            CreatedBy: currentUserId,
+            ModifiedBy: currentUserId,
+        };
+        try {
+            await Client.createCard(card);
+        } catch (resultError) {
+            setError(getErrorMessage(resultError));
+            setShowErrors(true);
+        }
+        setSubmitting(false);
+    };
+
     // handle card creation after form is populated
     const handleCreate = async (e: React.FormEvent) => {
         if (e && e.preventDefault) {
@@ -72,25 +101,7 @@ export const CardForm = ({visible, close, theme, create, currentChannel, current
             return;
         }
 
-        const card = {
-            RootID: board.id,
-            Title: cardTitle,
-            body: cardDescription,
-            WorkspaceID: currentChannel.id,
-            CreatedBy: currentUserId,
-            ModifiedBy: currentUserId,
-        };
-
-        setSubmitting(true);
-
-        const created = await create(card);
-        if (created.error) {
-            const errMessage = getErrorMessage(created.error.message);
-            setError(errMessage);
-            setShowErrors(true);
-            setSubmitting(false);
-            return;
-        }
+        createCard();
         handleClose(e);
     };
 
