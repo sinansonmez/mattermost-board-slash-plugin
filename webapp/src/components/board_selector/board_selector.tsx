@@ -13,6 +13,7 @@ export type Props = {
     onChange: (newValue: unknown, actionMeta: any) => void;
     required: boolean;
     value: {value: string; label: string};
+    setNoBoardAvailable: (noBoardAvailable: boolean) => void;
 }
 
 export const BoardSelector = (props: Props) => {
@@ -30,6 +31,7 @@ export const BoardSelector = (props: Props) => {
                 // eslint-disable-next-line max-nested-callbacks
                 const onlyBoards = json.filter((item) => item.type === 'board');
                 setYourBoards(onlyBoards);
+                props.setNoBoardAvailable(onlyBoards.length === 0);
             });
         });
     }, []);

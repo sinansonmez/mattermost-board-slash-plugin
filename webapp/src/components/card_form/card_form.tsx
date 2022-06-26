@@ -40,6 +40,7 @@ export const CardForm = ({visible, close, theme, currentChannel, currentUserId}:
     const [cardTitle, setCardTitle] = useState('');
     const [cardDescription, setCardDescription] = useState('');
     const [submitting, setSubmitting] = useState(false);
+    const [noBoardAvailable, setNoBoardAvailable] = useState(false);
 
     const getErrorMessage = (str: string) => {
         try {
@@ -123,11 +124,43 @@ export const CardForm = ({visible, close, theme, currentChannel, currentUserId}:
 
     const style = getStyle(theme);
 
+    if (noBoardAvailable) {
+        return (
+            <Modal
+                dialogClassName='modal--scroll'
+                show={visible}
+                onHide={handleClose}
+                bsSize='large'
+                backdrop='static'
+            >
+                <Modal.Header closeButton={true}>
+                    <Modal.Title>
+                        {'Create Card'}
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <p>
+                        {'No boards available for this workspace. Please create a board first.'}
+                    </p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <FormButton
+                        type='button'
+                        btnClass='btn-link'
+                        defaultMessage='Close'
+                        onClick={handleClose}
+                    />
+                </Modal.Footer>
+            </Modal>
+        );
+    }
+
     const component = (
         <div>
             <BoardSelector
                 onChange={handleBoardChange}
                 value={board}
+                setNoBoardAvailable={setNoBoardAvailable}
                 required={true}
             />
 

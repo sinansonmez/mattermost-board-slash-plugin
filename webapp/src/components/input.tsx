@@ -22,39 +22,12 @@ type Props = {
 const Input = ({type = 'input', required = false, readOnly = false, ...remainingProps}: Props) => {
     const [invalid, setInvalid] = useState(false);
 
-    // componentDidMount() {
-    //     if (this.props.addValidate && this.props.id) {
-    //         this.props.addValidate(this.props.id, this.isValid);
-    //     }
-    // }
-
-    // componentWillUnmount() {
-    //     if (this.props.removeValidate && this.props.id) {
-    //         this.props.removeValidate(this.props.id);
-    //     }
-    // }
-
-    // componentDidUpdate(prevProps, prevState) {
-    //     if (prevState.invalid && this.props.value !== prevProps.value) {
-    //         this.setState({invalid: false}); //eslint-disable-line react/no-did-update-set-state
-    //     }
-    // }
-
     const handleChange = (e: any) => {
         if (type === 'number') {
             remainingProps.onChange(parseInt(e.target.value, 10));
         } else {
             remainingProps.onChange(e.target.value);
         }
-    };
-
-    const isValid = () => {
-        if (!required) {
-            return true;
-        }
-        const valid = remainingProps.value && remainingProps.value.toString().length !== 0;
-        setInvalid(!valid);
-        return valid;
     };
 
     const requiredMsg = 'This field is required.';
