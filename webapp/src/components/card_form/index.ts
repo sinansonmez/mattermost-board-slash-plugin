@@ -2,26 +2,26 @@ import {connect} from 'react-redux';
 import {bindActionCreators, Dispatch} from 'redux';
 
 import {GlobalState} from 'mattermost-redux/types/store';
-import {getAllChannels} from 'mattermost-redux/selectors/entities/channels';
+import {getCurrentChannel} from 'mattermost-redux/selectors/entities/channels';
 
-import {isRootModalVisible, subMenu} from '../../selectors';
+import {getCurrentUserId} from 'mattermost-redux/selectors/entities/common';
 
-import {closeRootModal, createCard, getBoards} from 'actions';
+import {isRootModalVisible} from '../../selectors';
+
+import {closeRootModal} from 'actions';
 
 import {CardForm} from './card_form';
 
 const mapStateToProps = (state: GlobalState) => {
     return {
         visible: isRootModalVisible(state),
-        subMenu: subMenu(state),
-        channels: getAllChannels(state),
+        currentChannel: getCurrentChannel(state),
+        currentUserId: getCurrentUserId(state),
     };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) => bindActionCreators({
     close: closeRootModal,
-    create: createCard,
-    // getBoards,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(CardForm);

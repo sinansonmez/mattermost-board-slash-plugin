@@ -24,7 +24,7 @@ export default class Client {
         return {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-            Authorization: 'Bearer 8wzjceidbtg4xns7onsmjd4gry',
+            Authorization: 'Bearer cmazf8rhgjrg5ki6ds7xx44hhe',
             'X-Requested-With': 'XMLHttpRequest',
         };
     }
@@ -50,7 +50,7 @@ export default class Client {
         const response = await fetch(url, Client4.getOptions(options));
 
         if (response.ok) {
-            return response.json();
+            return response;
         }
 
         const text = await response.text();

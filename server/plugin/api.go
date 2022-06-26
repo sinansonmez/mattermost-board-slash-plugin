@@ -10,7 +10,9 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/mattermost/mattermost-plugin-api/experimental/bot/logger"
-	// "github.com/mattermost/mattermost-server/v6/model"
+	fb_model "github.com/mattermost/focalboard/server/model"
+	fb_utils "github.com/mattermost/focalboard/server/utils"
+	mm_model "github.com/mattermost/mattermost-server/v6/model"
 )
 
 // ResponseType indicates type of response returned by api
@@ -52,7 +54,6 @@ func (p *Plugin) initializeAPI() {
 	apiRouter.Use(p.checkConfigured)
 
 	apiRouter.HandleFunc("/createcard", p.attachUserContext(p.createCard)).Methods(http.MethodPost)
-	apiRouter.HandleFunc("/getboards", p.attachUserContext(p.getBoards)).Methods(http.MethodPost)
 }
 
 func (p *Plugin) withRecovery(next http.Handler) http.Handler {
@@ -108,150 +109,63 @@ func (p *Plugin) writeAPIError(w http.ResponseWriter, apiErr *APIErrorResponse) 
 }
 
 func (p *Plugin) createCard(c *UserContext, w http.ResponseWriter, r *http.Request) {
-	// type IssueRequest struct {
-	// 	Title     string   `json:"title"`
-	// 	Body      string   `json:"body"`
-	// 	Repo      string   `json:"repo"`
-	// 	PostID    string   `json:"post_id"`
-	// 	ChannelID string   `json:"channel_id"`
-	// 	Labels    []string `json:"labels"`
-	// 	Assignees []string `json:"assignees"`
-	// 	Milestone int      `json:"milestone"`
-	// }
+	initialCard := &fb_model.Block{
+		ID: fb_utils.NewID(fb_utils.IDTypeCard),
+		CreatedBy:   "c.User.Id",
+		ModifiedBy:  "info.User.Id",
+		Schema:      1,
+		Type:        fb_model.TypeCard,
+		Fields:      make(map[string]interface{}),
+		CreateAt:    mm_model.GetMillis(),
+		UpdateAt:    mm_model.GetMillis(),
+	}
 
-	// // get data for the issue from the request body and fill IssueRequest object
-	// issue := &IssueRequest{}
-	// if err := json.NewDecoder(r.Body).Decode(&issue); err != nil {
-	// 	c.Log.WithError(err).Warnf("Error decoding JSON body")
-	// 	p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "Please provide a JSON object.", StatusCode: http.StatusBadRequest})
-	// 	return
-	// }
+	// get data for the card from the request body and fill initialCard object
+	if err := json.NewDecoder(r.Body).Decode(&initialCard); err != nil {
+		c.Log.WithError(err).Warnf("Error decoding JSON body")
+		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "Please provide a JSON object.", StatusCode: http.StatusBadRequest})
+		return
+	}
 
-	// if issue.Title == "" {
-	// 	p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "Please provide a valid issue title.", StatusCode: http.StatusBadRequest})
-	// 	return
-	// }
+	if initialCard.Title == "" {
+		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "Please provide a valid issue title.", StatusCode: http.StatusBadRequest})
+		return
+	}
 
-	// if issue.Repo == "" {
-	// 	p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "Please provide a valid repo name.", StatusCode: http.StatusBadRequest})
-	// 	return
-	// }
+	if initialCard.RootID == "" {
+		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "Please provide a valid board.", StatusCode: http.StatusBadRequest})
+		return
+	}
 
-	// if issue.PostID == "" && issue.ChannelID == "" {
-	// 	p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "Please provide either a postID or a channelID", StatusCode: http.StatusBadRequest})
-	// 	return
-	// }
+	initialCard.ParentID = initialCard.RootID
 
-	// mmMessage := ""
-	// var post *model.Post
-	// permalink := ""
-	// if issue.PostID != "" {
-	// 	var appErr *model.AppError
-	// 	post, appErr = p.API.GetPost(issue.PostID)
-	// 	if appErr != nil {
-	// 		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "failed to load post " + issue.PostID, StatusCode: http.StatusInternalServerError})
-	// 		return
-	// 	}
-	// 	if post == nil {
-	// 		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "failed to load post " + issue.PostID + ": not found", StatusCode: http.StatusNotFound})
-	// 		return
-	// 	}
+	// todo: replace literal with real siteurl and user info
+	client, err := NewClient("https://8065-mattermost-mattermostgi-cf4j2retku7.ws-eu47.gitpod.io", "sysadmin", "Sys@dmin-sample1")
 
-	// 	username, err := p.getUsername(post.UserId)
-	// 	if err != nil {
-	// 		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "failed to get username", StatusCode: http.StatusInternalServerError})
-	// 		return
-	// 	}
+	if err != nil {
+		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "Error creating client:", StatusCode: http.StatusBadRequest})
+	}
 
-	// 	permalink = p.getPermaLink(issue.PostID)
+	_, resp := insertBlock(client, initialCard.WorkspaceID, initialCard)
 
-	// 	mmMessage = fmt.Sprintf("_Issue created from a [Mattermost message](%v) *by %s*._", permalink, username)
-	// }
+	if resp.Error != nil {
+		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "cannot insert block in the board", StatusCode: http.StatusBadRequest})
+	}
 
-	// ghIssue := &github.IssueRequest{
-	// 	Title:     &issue.Title,
-	// 	Body:      &issue.Body,
-	// 	Labels:    &issue.Labels,
-	// 	Assignees: &issue.Assignees,
-	// }
-
-	// // submitting the request with an invalid milestone ID results in a 422 error
-	// // we make sure it's not zero here, because the webapp client might have left this field empty
-	// if issue.Milestone > 0 {
-	// 	ghIssue.Milestone = &issue.Milestone
-	// }
-
-	// if ghIssue.GetBody() != "" && mmMessage != "" {
-	// 	mmMessage = "\n\n" + mmMessage
-	// }
-	// *ghIssue.Body = ghIssue.GetBody() + mmMessage
-
-	// currentUser, appErr := p.API.GetUser(c.UserID)
-	// if appErr != nil {
-	// 	p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "failed to load current user", StatusCode: http.StatusInternalServerError})
-	// 	return
-	// }
-
-	// splittedRepo := strings.Split(issue.Repo, "/")
-	// owner := splittedRepo[0]
-	// repoName := splittedRepo[1]
-
-	// githubClient := p.githubConnectUser(c.Context.Ctx, c.GHInfo)
-	// result, resp, err := githubClient.Issues.Create(c.Ctx, owner, repoName, ghIssue)
-	// if err != nil {
-	// 	if resp != nil && resp.Response.StatusCode == http.StatusGone {
-	// 		p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "Issues are disabled on this repository.", StatusCode: http.StatusMethodNotAllowed})
-	// 		return
-	// 	}
-
-	// 	c.Log.WithError(err).Warnf("Failed to create issue")
-	// 	p.writeAPIError(w,
-	// 		&APIErrorResponse{
-	// 			ID: "",
-	// 			Message: "failed to create issue: " + getFailReason(resp.StatusCode,
-	// 				issue.Repo,
-	// 				currentUser.Username,
-	// 			),
-	// 			StatusCode: resp.StatusCode,
-	// 		})
-	// 	return
-	// }
-
-	// rootID := issue.PostID
-	// channelID := issue.ChannelID
-	// message := fmt.Sprintf("Created GitHub issue [#%v](%v)", result.GetNumber(), result.GetHTMLURL())
-	// if post != nil {
-	// 	if post.RootId != "" {
-	// 		rootID = post.RootId
-	// 	}
-	// 	channelID = post.ChannelId
-	// 	message += fmt.Sprintf(" from a [message](%s)", permalink)
-	// }
-
-	// reply := &model.Post{
-	// 	Message:   message,
-	// 	ChannelId: channelID,
-	// 	RootId:    rootID,
-	// 	UserId:    c.UserID,
-	// }
-
-	// if post != nil {
-	// 	_, appErr = p.API.CreatePost(reply)
-	// } else {
-	// 	p.API.SendEphemeralPost(c.UserID, reply)
-	// }
-	// if appErr != nil {
-	// 	c.Log.WithError(appErr).Warnf("failed to create notification post")
-	// 	p.writeAPIError(w, &APIErrorResponse{ID: "", Message: "failed to create notification post, postID: " + issue.PostID + ", channelID: " + channelID, StatusCode: http.StatusInternalServerError})
-	// 	return
-	// }
-
-	// p.writeJSON(w, result)
+	return
 }
 
-// get all the blocks in team from mattermost focalboard api
-func (p *Plugin) getBoards(c *UserContext, w http.ResponseWriter, r *http.Request) {
-	fmt.Println("-----------------getBoards-----------------")
+func insertBlock(client *Client, workspaceID string, block *fb_model.Block) (*fb_model.Block, *Response) {
+	blocks := []*fb_model.Block{block}
+	b, _ := json.Marshal(blocks)
+	r, err := client.FBclient.DoAPIPost(fmt.Sprintf("/workspaces/%s/blocks", workspaceID), string(b))
+	if err != nil {
+		return nil, BuildErrorResponse(r, err)
+	}
+	defer closeBody(r)
+
+	blocksNew := fb_model.BlocksFromJSON(r.Body)
+	return &blocksNew[0], BuildResponse(r)
 }
 
 func (p *Plugin) attachUserContext(handler HTTPHandlerFuncWithUserContext) http.HandlerFunc {
@@ -259,19 +173,8 @@ func (p *Plugin) attachUserContext(handler HTTPHandlerFuncWithUserContext) http.
 		context, cancel := p.createContext(w, r)
 		defer cancel()
 
-		// info, apiErr := p.getGitHubUserInfo(context.UserID)
-		// if apiErr != nil {
-		// 	p.writeAPIError(w, apiErr)
-		// 	return
-		// }
-
-		// context.Log = context.Log.With(logger.LogContext{
-		// 	"github username": info.GitHubUsername,
-		// })
-
 		userContext := &UserContext{
 			Context: *context,
-			// GHInfo:  info,
 		}
 
 		handler(userContext, w, r)

@@ -31,11 +31,7 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 		return &model.CommandResponse{}, nil
 	}
 
-	// config := p.getConfiguration()
-
-	// if f, ok := p.CommandHandlers[action]; ok {
 	if f, ok := p.CommandHandlers["card"]; ok {
-		// message := f(c, args, parameters)
 		fakeParameters := []string{"card", "create", "test"}
 		message := f(c, args, fakeParameters)
 		if message != "" {
@@ -44,7 +40,7 @@ func (p *Plugin) ExecuteCommand(c *plugin.Context, args *model.CommandArgs) (*mo
 		return &model.CommandResponse{}, nil
 	}
 
-	p.postCommandResponse(args, fmt.Sprintf("Unknown action %v", "card")) // todo replace card with action
+	p.postCommandResponse(args, fmt.Sprintf("Unknown action %v", "card"))
 	return &model.CommandResponse{}, nil
 
 }
